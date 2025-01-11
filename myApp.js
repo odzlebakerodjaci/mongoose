@@ -24,7 +24,8 @@ const personName = Person => {
   return Person.name
 };
 
-const personId = '678292766172cab09a1a557b';
+const personId = '67829687837c1a16f402b9e2';
+
 
 
 
@@ -34,6 +35,7 @@ const createAndSavePerson = (done) => {
   zika.save((err,data) => {
     if(err){
       console.log(err)
+      done(err,null)
     }
     else{
       done(null,data)
@@ -89,30 +91,72 @@ const findPersonById = (personId, done) => {
 
 const findEditThenSave = (personId, done) => {
   const foodToAdd = "hamburger";
-
-  done(null /*, data*/);
+  findPersonById(personId, (err,result)=>{
+    if(err){
+    console.log(err)
+    }
+    else{
+      result.favoriteFoods.push(foodToAdd);
+      result.save((err, updatedResult)=>{
+        if(err){
+          console.log(err)
+          } 
+        else{
+          done(null, updatedResult)
+        }
+      })
+    }
+  })
 };
+
+
 
 const findAndUpdate = (personName, done) => {
   const ageToSet = 20;
-
-  done(null /*, data*/);
+  Person.findOneAndUpdate({name: personName}, {age:ageToSet}, {new:true}, (err, updatedResult)=>{
+    if(err){
+      console.log(err)
+    }
+    else{
+      done(null, updatedResult)
+    }
+  })
 };
 
 const removeById = (personId, done) => {
-  done(null /*, data*/);
+  Person.findByIdAndRemove(personId, (err, deletedRecords)=>{
+    if(err){
+      console.log(err)
+    }
+    else{
+      done(null, deletedRecords)
+    }
+  })
 };
 
 const removeManyPeople = (done) => {
   const nameToRemove = "Mary";
-
-  done(null /*, data*/);
+  Person.remove({name: nameToRemove}, (err, removedRecords)=>{
+    if(err){
+      console.log(err)
+    }
+    else{
+      done(null, removedRecords)
+    }
+  })
 };
+
 
 const queryChain = (done) => {
   const foodToSearch = "burrito";
-
-  done(null /*, data*/);
+  Person.find({favoriteFoods: foodToSearch}).sort('name').limit(2).select('name favoriteFoods').exec((err, data) => {                  
+      if (err) {
+        console.log(err);                 
+        done(err, null);                     
+      } else {
+        done(null, data);                     
+      }
+    });
 };
 
 /** **Well Done !!**
